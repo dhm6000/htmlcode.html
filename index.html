@@ -79,6 +79,17 @@
       </div>
     </div>
 
+    <!-- Planned Projects Pie with Percentage Table -->
+    <div class="bg-white rounded-lg shadow-md p-6 print-page mb-6">
+      <h2 class="text-xl font-semibold text-slate-800 mb-4">Planned Projects by Supply Chain Segment</h2>
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Pie Chart Canvas -->
+        <canvas id="plannedPieChart" height="300" class="flex-1"></canvas>
+        <!-- Table Container for Percentages -->
+        <div id="plannedTable" class="flex-1 text-sm bg-slate-50 p-4 rounded-lg"></div>
+      </div>
+    </div>
+
     <!-- Status Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Project Status Distribution</h2>
@@ -147,6 +158,21 @@ const segmentData = {
 };
 
 /* -----------------------------
+   PLANNED PROJECTS DATA
+----------------------------- */
+const plannedDataDict = {
+  'Downstream': 45,
+  'Midstream': 76,
+  'Other': 4,
+  'Other - Equipment': 1,
+  'Other - Research': 4,
+  'Other - Service & Repair': 2,
+  'Upstream': 38
+};
+const plannedLabels = Object.keys(plannedDataDict);
+const plannedValues = Object.values(plannedDataDict);
+
+/* -----------------------------
    STATUS DATA
 ----------------------------- */
 const statusData = {
@@ -169,7 +195,7 @@ const statusData = {
 const stateLabels = ['CA', 'MI', 'TX', 'MA', 'ON', 'QC', 'OH', 'NY', 'PA', 'NC', 'Others'];
 const stateValues = [
   165, 98, 59, 53, 51, 47, 43, 42, 40, 37,
-  1191 - (165+98+59+53+51+47+43+42+40+37)  // auto-calc Others
+  1191 - (165+98+59+53+51+47+43+42+40+37)
 ];
 
 /* -----------------------------
@@ -182,25 +208,39 @@ new Chart(document.getElementById('segmentBarChart'), {
   options: { responsive: true, plugins: { legend: { display: false } } }
 });
 
-// PIE CHART WITH PERCENTAGE TABLE
+// Segment Pie with Percentage Table
 const totalSegments = segmentData.values.reduce((a, b) => a + b, 0);
 const tableContainer = document.getElementById("segmentTable");
-tableContainer.innerHTML = segmentData.labels.map((label, i) => {
+tableContainer.innerHTML = segmentData.labels.map((label,i)=>{
   const value = segmentData.values[i];
-  const pct = ((value / totalSegments) * 100).toFixed(1);
-  return `
-    <div class="flex items-center gap-3 mb-1">
-      <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-      <div class="flex-1 font-medium">${label}</div>
-      <div class="font-semibold">${pct}%</div>
-    </div>
-  `;
+  const pct = ((value/totalSegments)*100).toFixed(1);
+  return `<div class="flex items-center gap-3 mb-1">
+    <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
+    <div class="flex-1 font-medium">${label}</div>
+    <div class="font-semibold">${pct}%</div>
+  </div>`;
 }).join("");
-
-// Render Pie Chart
 new Chart(document.getElementById('segmentPieChart'), {
   type: 'pie',
   data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// Planned Projects Pie with Percentage Table
+const totalPlanned = plannedValues.reduce((a,b)=>a+b,0);
+const plannedTable = document.getElementById("plannedTable");
+plannedTable.innerHTML = plannedLabels.map((label,i)=>{
+  const value = plannedValues[i];
+  const pct = ((value/totalPlanned)*100).toFixed(1);
+  return `<div class="flex items-center gap-3 mb-1">
+    <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
+    <div class="flex-1 font-medium">${label}</div>
+    <div class="font-semibold">${pct}%</div>
+  </div>`;
+}).join("");
+new Chart(document.getElementById('plannedPieChart'), {
+  type: 'pie',
+  data: { labels: plannedLabels, datasets: [{ data: plannedValues, backgroundColor: COLORS }] },
   options: { responsive: true, plugins: { legend: { display: false } } }
 });
 
