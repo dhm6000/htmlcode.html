@@ -1,27 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
+  #date { margin-bottom: 20px; font-size: 18px; font-weight: bold; }
+  #chartsContainer { display: flex; flex-direction: column; gap: 40px; }
+  .chart-unit { display: flex; flex-direction: column; gap: 10px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+  .chart-unit div { font-size: 16px; }
+  .flex { display: flex; align-items: center; }
+  .flex-1 { flex: 1; }
+  .gap-3 { gap: 0.75rem; }
+  .mb-1 { margin-bottom: 0.25rem; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .text-lg { font-size: 1.125rem; }
+  .w-4 { width: 1rem; }
+  .h-4 { height: 1rem; }
+  .rounded-sm { border-radius: 0.125rem; }
+</style>
+</head>
+<body>
+
 <div id="date"></div>
 
-<div id="chartsContainer" style="display:flex; flex-direction:column; gap:40px;">
+<div id="chartsContainer">
 
   <!-- Segment Chart + Table -->
-  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+  <div class="chart-unit">
     <canvas id="segmentBarChart" style="height:300px;"></canvas>
     <div id="segmentTable"></div>
     <canvas id="segmentPieChart" style="height:300px;"></canvas>
   </div>
 
   <!-- Planned Projects Chart + Table -->
-  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+  <div class="chart-unit">
     <canvas id="plannedPieChart" style="height:300px;"></canvas>
     <div id="plannedTable"></div>
   </div>
 
   <!-- Status Chart -->
-  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+  <div class="chart-unit">
     <canvas id="statusBarChart" style="height:300px;"></canvas>
   </div>
 
   <!-- State Chart -->
-  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+  <div class="chart-unit">
     <canvas id="stateBarChart" style="height:300px;"></canvas>
   </div>
 
@@ -67,7 +94,7 @@ new Chart(document.getElementById('segmentBarChart'), {
 const totalSegments = segmentData.values.reduce((a,b)=>a+b,0);
 document.getElementById("segmentTable").innerHTML = segmentData.labels.map((label,i)=>{
   const pct=((segmentData.values[i]/totalSegments)*100).toFixed(1);
-  return `<div class="flex items-center gap-3 mb-1">
+  return `<div class="flex gap-3 mb-1">
     <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
     <div class="flex-1 font-medium text-lg">${label}</div>
     <div class="font-semibold text-lg">${pct}%</div>
@@ -83,7 +110,7 @@ new Chart(document.getElementById('segmentPieChart'), {
 const totalPlanned = plannedData.values.reduce((a,b)=>a+b,0);
 document.getElementById("plannedTable").innerHTML = plannedData.labels.map((label,i)=>{
   const pct = ((plannedData.values[i]/totalPlanned)*100).toFixed(1);
-  return `<div class="flex items-center gap-3 mb-1">
+  return `<div class="flex gap-3 mb-1">
     <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
     <div class="flex-1 font-medium text-lg">${label}</div>
     <div class="font-semibold text-lg">${pct}%</div>
@@ -109,3 +136,6 @@ new Chart(document.getElementById('stateBarChart'), {
   options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Top States/Provinces by Facility Count',font:{size:20}}},maintainAspectRatio:false}
 });
 </script>
+
+</body>
+</html>
