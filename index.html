@@ -84,11 +84,12 @@
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Planned Projects by Supply Chain Segment</h2>
       <div class="flex flex-col lg:flex-row gap-6">
         <!-- Pie Chart Canvas -->
-        <canvas id="plannedPieChart" height="300" class="flex-1"></canvas>
+        <canvas id="plannedPieChart" height="300" class="flex-1 min-w-0"></canvas>
         <!-- Table Container for Percentages -->
-        <div id="plannedTable" class="flex-1 text-sm bg-slate-50 p-4 rounded-lg"></div>
+        <div id="plannedTable" class="flex-1 text-sm bg-slate-50 p-4 rounded-lg overflow-auto min-w-0"></div>
       </div>
     </div>
+
 
     <!-- Status Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
@@ -226,17 +227,23 @@ new Chart(document.getElementById('segmentPieChart'), {
   options: { responsive: true, plugins: { legend: { display: false } } }
 });
 
-<!-- Planned Projects Pie with Percentage Table -->
-<div class="bg-white rounded-lg shadow-md p-6 print-page mb-6">
-  <h2 class="text-xl font-semibold text-slate-800 mb-4">Planned Projects by Supply Chain Segment</h2>
-  <div class="flex flex-col lg:flex-row gap-6">
-    <!-- Pie Chart Canvas -->
-    <canvas id="plannedPieChart" height="300" class="flex-1 min-w-0"></canvas>
-    <!-- Table Container for Percentages -->
-    <div id="plannedTable" class="flex-1 text-sm bg-slate-50 p-4 rounded-lg overflow-auto min-w-0"></div>
-  </div>
-</div>
-
+// Planned Projects Pie with Percentage Table
+const totalPlanned = plannedValues.reduce((a,b)=>a+b,0);
+const plannedTable = document.getElementById("plannedTable");
+plannedTable.innerHTML = plannedLabels.map((label,i)=>{
+  const value = plannedValues[i];
+  const pct = ((value/totalPlanned)*100).toFixed(1);
+  return `<div class="flex items-center gap-3 mb-1">
+    <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
+    <div class="flex-1 font-medium">${label}</div>
+    <div class="font-semibold">${pct}%</div>
+  </div>`;
+}).join("");
+new Chart(document.getElementById('plannedPieChart'), {
+  type: 'pie',
+  data: { labels: plannedLabels, datasets: [{ data: plannedValues, backgroundColor: COLORS }] },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
 
 // Status Bar
 new Chart(document.getElementById('statusBarChart'), {
@@ -259,4 +266,3 @@ new Chart(document.getElementById('stateBarChart'), {
 
 </body>
 </html>
-
