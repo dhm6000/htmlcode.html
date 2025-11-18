@@ -10,6 +10,9 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+<!-- Chart.js datalabels -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <style>
   @media print {
@@ -183,11 +186,26 @@ new Chart(document.getElementById('segmentBarChart'), {
 
 new Chart(document.getElementById('segmentPieChart'), {
   type: 'pie',
+  plugins: [ChartDataLabels],
   data: {
     labels: segmentData.labels,
     datasets: [{ data: segmentData.values, backgroundColor: COLORS }]
   },
-  options: { responsive: true }
+  options: {
+    responsive: true,
+    plugins: {
+      datalabels: {
+        formatter: (value, ctx) => {
+          const dataArr = ctx.chart.data.datasets[0].data;
+          const total = dataArr.reduce((a, b) => a + b, 0);
+          const pct = ((value / total) * 100).toFixed(1);
+          return pct + "%";
+        },
+        color: "#ffffff",
+        font: { weight: "bold" }
+      }
+    }
+  }
 });
 
 new Chart(document.getElementById('statusBarChart'), {
@@ -219,6 +237,7 @@ new Chart(document.getElementById('stateBarChart'), {
 
 </body>
 </html>
+
 
 
 
