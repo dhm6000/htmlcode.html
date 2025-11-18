@@ -10,9 +10,6 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-<!-- Chart.js datalabels -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <style>
   @media print {
@@ -71,17 +68,15 @@
       <canvas id="segmentBarChart" height="300"></canvas>
     </div>
 
-    <!-- Segment Pie -->
+    <!-- Segment Pie with Percentage Table -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Supply Chain Segment Distribution</h2>
-      <div class="flex flex-col lg:flex-row gap-6 items-start">
-  <!-- Pie Chart -->
-  <canvas id="segmentPieChart" width="300" height="300"></canvas>
-
-  <!-- Percentage Table -->
-  <div id="segmentTable" class="text-sm text-slate-700 space-y-2"></div>
-</div>
-
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Pie Chart Canvas -->
+        <canvas id="segmentPieChart" height="300" class="flex-1"></canvas>
+        <!-- Table Container for Percentages -->
+        <div id="segmentTable" class="flex-1 text-sm bg-slate-50 p-4 rounded-lg"></div>
+      </div>
     </div>
 
     <!-- Status Bar -->
@@ -110,14 +105,12 @@
       The full online database is available
       <a href="https://www.nrel.gov/transportation/li-ion-battery-supply-chain-database-online"
          class="text-blue-600 underline"
-         target="_blank" rel="noopener noreferrer">
-         here</a>.
+         target="_blank" rel="noopener noreferrer">here</a>.
       Use of the data indicates agreement to the
       <a href="https://www.nrel.gov/transportation/li-ion-battery-supply-chain-database-registration?formName=formLiOn"
          class="text-blue-600 underline"
          target="_blank" rel="noopener noreferrer">Terms of Use</a>.
     </p>
-
 
     <p class="text-sm text-slate-600 mb-3">
       Use of this data requires Attribution to NREL and NAATBatt International.
@@ -137,42 +130,42 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 /* -----------------------------
    SUPPLY CHAIN SEGMENT DATA
-   ----------------------------- */
+----------------------------- */
 const segmentData = {
   labels: [
-    'Downstream (370)',
-    'Midstream (270)',
-    'Other - Equipment (143)',
-    'Other - Research (130)',
-    'Upstream (94)',
-    'Other - Service & Repair (90)',
-    'Other (57)',
-    'Other - Modeling/Software (36)',
-    'Under Construction (1)'
+    'Downstream',
+    'Midstream',
+    'Other - Equipment',
+    'Other - Research',
+    'Upstream',
+    'Other - Service & Repair',
+    'Other',
+    'Other - Modeling/Software',
+    'Under Construction'
   ],
   values: [370, 270, 143, 130, 94, 90, 57, 36, 1]
 };
 
 /* -----------------------------
-   STATUS DATA (your exact values)
-   ----------------------------- */
+   STATUS DATA
+----------------------------- */
 const statusData = {
   labels: [
-    'Commercial (802)',
-    'Planned (170)',
-    'Pre-commercial/startup (129)',
-    'Under construction (59)',
-    'Cancelled (21)',
-    'Bankrupt (4)',
-    'Under Construction (3)',
-    'Paused construction (3)'
+    'Commercial',
+    'Planned',
+    'Pre-commercial/startup',
+    'Under construction',
+    'Cancelled',
+    'Bankrupt',
+    'Under Construction',
+    'Paused construction'
   ],
   values: [802, 170, 129, 59, 21, 4, 3, 3]
 };
 
 /* -----------------------------
-   TOP STATES BY FACILITY COUNT
-   ----------------------------- */
+   STATES DATA
+----------------------------- */
 const stateLabels = ['CA', 'MI', 'TX', 'MA', 'ON', 'QC', 'OH', 'NY', 'PA', 'NC', 'Others'];
 const stateValues = [
   165, 98, 59, 53, 51, 47, 43, 42, 40, 37,
@@ -181,46 +174,40 @@ const stateValues = [
 
 /* -----------------------------
    CHARTS
-   ----------------------------- */
+----------------------------- */
+// Segment Bar
 new Chart(document.getElementById('segmentBarChart'), {
   type: 'bar',
-  data: {
-    labels: segmentData.labels,
-    datasets: [{ data: segmentData.values, backgroundColor: COLORS }]
-  },
+  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
   options: { responsive: true, plugins: { legend: { display: false } } }
 });
 
+// PIE CHART WITH PERCENTAGE TABLE
+const totalSegments = segmentData.values.reduce((a, b) => a + b, 0);
+const tableContainer = document.getElementById("segmentTable");
+tableContainer.innerHTML = segmentData.labels.map((label, i) => {
+  const value = segmentData.values[i];
+  const pct = ((value / totalSegments) * 100).toFixed(1);
+  return `
+    <div class="flex items-center gap-3 mb-1">
+      <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
+      <div class="flex-1 font-medium">${label}</div>
+      <div class="font-semibold">${pct}%</div>
+    </div>
+  `;
+}).join("");
+
+// Render Pie Chart
 new Chart(document.getElementById('segmentPieChart'), {
   type: 'pie',
-  plugins: [ChartDataLabels],
-  data: {
-    labels: segmentData.labels,
-    datasets: [{ data: segmentData.values, backgroundColor: COLORS }]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      datalabels: {
-        formatter: (value, ctx) => {
-          const dataArr = ctx.chart.data.datasets[0].data;
-          const total = dataArr.reduce((a, b) => a + b, 0);
-          const pct = ((value / total) * 100).toFixed(1);
-          return pct + "%";
-        },
-        color: "#ffffff",
-        font: { weight: "bold" }
-      }
-    }
-  }
+  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
+  options: { responsive: true, plugins: { legend: { display: false } } }
 });
 
+// Status Bar
 new Chart(document.getElementById('statusBarChart'), {
   type: 'bar',
-  data: {
-    labels: statusData.labels,
-    datasets: [{ data: statusData.values, backgroundColor: COLORS }]
-  },
+  data: { labels: statusData.labels, datasets: [{ data: statusData.values, backgroundColor: COLORS }] },
   options: {
     responsive: true,
     plugins: { legend: { display: false } },
@@ -228,24 +215,13 @@ new Chart(document.getElementById('statusBarChart'), {
   }
 });
 
+// State Bar Horizontal
 new Chart(document.getElementById('stateBarChart'), {
   type: 'bar',
-  data: {
-    labels: stateLabels,
-    datasets: [{ data: stateValues, backgroundColor: '#10b981' }]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    plugins: { legend: { display: false } }
-  }
+  data: { labels: stateLabels, datasets: [{ data: stateValues, backgroundColor: '#10b981' }] },
+  options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
 });
 </script>
 
 </body>
 </html>
-
-
-
-
-
