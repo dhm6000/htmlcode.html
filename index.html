@@ -1,3 +1,32 @@
+<div id="date"></div>
+
+<div id="chartsContainer" style="display:flex; flex-direction:column; gap:40px;">
+
+  <!-- Segment Chart + Table -->
+  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+    <canvas id="segmentBarChart" style="height:300px;"></canvas>
+    <div id="segmentTable"></div>
+    <canvas id="segmentPieChart" style="height:300px;"></canvas>
+  </div>
+
+  <!-- Planned Projects Chart + Table -->
+  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+    <canvas id="plannedPieChart" style="height:300px;"></canvas>
+    <div id="plannedTable"></div>
+  </div>
+
+  <!-- Status Chart -->
+  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+    <canvas id="statusBarChart" style="height:300px;"></canvas>
+  </div>
+
+  <!-- State Chart -->
+  <div class="chart-unit" style="display:flex; flex-direction:column; gap:10px;">
+    <canvas id="stateBarChart" style="height:300px;"></canvas>
+  </div>
+
+</div>
+
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString();
 
@@ -31,14 +60,7 @@ const stateValues = [165,98,59,53,51,47,43,42,40,37, 1191-(165+98+59+53+51+47+43
 new Chart(document.getElementById('segmentBarChart'), {
   type: 'bar',
   data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
-  options: {
-    responsive:true,
-    plugins:{
-      legend:{display:false},
-      title:{display:true,text:'Companies by Supply Chain Segment',font:{size:20}} // increased font size
-    },
-    maintainAspectRatio:false
-  }
+  options: { responsive:true, plugins:{legend:{display:false}, title:{display:true,text:'Companies by Supply Chain Segment',font:{size:20}}}, maintainAspectRatio:false }
 });
 
 // Segment Pie + Table
@@ -47,18 +69,14 @@ document.getElementById("segmentTable").innerHTML = segmentData.labels.map((labe
   const pct=((segmentData.values[i]/totalSegments)*100).toFixed(1);
   return `<div class="flex items-center gap-3 mb-1">
     <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-    <div class="flex-1 font-medium text-lg">${label}</div> <!-- increased font size -->
-    <div class="font-semibold text-lg">${pct}%</div> <!-- increased font size -->
+    <div class="flex-1 font-medium text-lg">${label}</div>
+    <div class="font-semibold text-lg">${pct}%</div>
   </div>`;
 }).join("");
 new Chart(document.getElementById('segmentPieChart'), {
   type:'pie',
   data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-  options:{
-    responsive:true,
-    plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:20}}},
-    maintainAspectRatio:false
-  }
+  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:20}}}, maintainAspectRatio:false}
 });
 
 // Planned Projects Pie + Table
@@ -67,30 +85,21 @@ document.getElementById("plannedTable").innerHTML = plannedData.labels.map((labe
   const pct = ((plannedData.values[i]/totalPlanned)*100).toFixed(1);
   return `<div class="flex items-center gap-3 mb-1">
     <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-    <div class="flex-1 font-medium text-lg">${label}</div> <!-- increased font size -->
-    <div class="font-semibold text-lg">${pct}%</div> <!-- increased font size -->
+    <div class="flex-1 font-medium text-lg">${label}</div>
+    <div class="font-semibold text-lg">${pct}%</div>
   </div>`;
 }).join("");
 new Chart(document.getElementById('plannedPieChart'), {
   type:'pie',
   data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]},
-  options:{
-    responsive:true,
-    plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:20}}},
-    maintainAspectRatio:false
-  }
+  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:20}}}, maintainAspectRatio:false}
 });
 
 // Status Bar
 new Chart(document.getElementById('statusBarChart'), {
   type:'bar',
   data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]},
-  options:{
-    responsive:true,
-    plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:20}}},
-    scales:{x:{ticks:{maxRotation:45,minRotation:45}}},
-    maintainAspectRatio:false
-  }
+  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:20}}}, scales:{x:{ticks:{maxRotation:45,minRotation:45}}}, maintainAspectRatio:false}
 });
 
 // State Bar Horizontal
