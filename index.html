@@ -4,10 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Battery Supply Chain Dashboard</title>
-<!-- Tailwind CDN for styling -->
+
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Chart.js CDN for charts -->
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
   @media print {
     body { margin: 0; }
@@ -17,6 +20,7 @@
   }
 </style>
 </head>
+
 <body class="bg-slate-50 p-6">
 
 <div class="max-w-7xl mx-auto">
@@ -38,15 +42,15 @@
   <!-- Key Stats -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 print-page">
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800">1,191</div>
+      <div class="text-3xl font-bold text-slate-800">1191</div>
       <div class="text-slate-600 text-sm">Total Facilities</div>
     </div>
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800">789</div>
+      <div class="text-3xl font-bold text-slate-800">802</div>
       <div class="text-slate-600 text-sm">Commercial Operations</div>
     </div>
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800">187</div>
+      <div class="text-3xl font-bold text-slate-800">170</div>
       <div class="text-slate-600 text-sm">Planned Projects</div>
     </div>
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
@@ -55,49 +59,33 @@
     </div>
   </div>
 
-  <!-- Charts -->
+  <!-- Charts Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
-    <!-- Bar Chart: Segments -->
+    <!-- Segment Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Companies by Supply Chain Segment</h2>
       <canvas id="segmentBarChart" height="300"></canvas>
-      <div class="mt-4 text-sm text-slate-600">
-        <div class="grid grid-cols-2 gap-2">
-          <div><span class="inline-block w-3 h-3 bg-blue-500 mr-2"></span>Upstream: Mining & Raw Materials</div>
-          <div><span class="inline-block w-3 h-3 bg-green-500 mr-2"></span>Midstream: Cell & Material Production</div>
-          <div><span class="inline-block w-3 h-3 bg-amber-500 mr-2"></span>Downstream: Assembly & Recycling</div>
-          <div><span class="inline-block w-3 h-3 bg-red-500 mr-2"></span>Other: Equipment & Services</div>
-        </div>
-      </div>
     </div>
 
-    <!-- Pie Chart: Segments -->
+    <!-- Segment Pie -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Supply Chain Segment Distribution</h2>
       <canvas id="segmentPieChart" height="300"></canvas>
-      <div class="mt-4 text-sm text-slate-600">
-        <div class="grid grid-cols-2 gap-2">
-          <div><span class="inline-block w-3 h-3 bg-blue-500 mr-2"></span>Upstream: 89 facilities</div>
-          <div><span class="inline-block w-3 h-3 bg-green-500 mr-2"></span>Midstream: 349 facilities</div>
-          <div><span class="inline-block w-3 h-3 bg-amber-500 mr-2"></span>Downstream: 567 facilities</div>
-          <div><span class="inline-block w-3 h-3 bg-red-500 mr-2"></span>Other: 186 facilities</div>
-        </div>
-      </div>
     </div>
 
-    <!-- Bar Chart: Project Status -->
+    <!-- Status Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Project Status Distribution</h2>
       <canvas id="statusBarChart" height="300"></canvas>
     </div>
 
-    <!-- Bar Chart: States -->
+    <!-- State Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 print-page">
       <h2 class="text-xl font-semibold text-slate-800 mb-4">Top States/Provinces by Facility Count</h2>
       <canvas id="stateBarChart" height="350"></canvas>
       <div class="mt-4 text-sm text-slate-600 bg-slate-50 p-3 rounded">
-        <strong>Note:</strong> "Others" represents the combined total of facilities across 42+ additional states and provinces not shown individually in the top 8.
+        <strong>Note:</strong> "Others" represents all additional states/provinces beyond the top 10.
       </div>
     </div>
 
@@ -106,7 +94,7 @@
   <!-- Footer -->
   <div class="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-200 print-page">
     <h3 class="font-semibold text-slate-800 mb-2">About this Data</h3>
-  
+
     <p class="text-sm text-slate-600 mb-3">
       This dashboard visualizes data from the NAATBatt Lithium-Ion Battery Supply Chain Database.
       Use of the data indicates agreement to the
@@ -114,120 +102,114 @@
          class="text-blue-600 underline"
          target="_blank" rel="noopener noreferrer">Terms of Use</a>.
     </p>
-  
+
     <p class="text-sm text-slate-600 mb-3">
-      If republished or incorporated into any database, attribution to both NREL and NAATBatt International is required.
+      Attribution is required to NREL and NAATBatt International.
     </p>
-  
-    <p class="text-sm text-slate-600 mb-3">
-      Required attribution:
-      <br>
-      “Source: NREL & NAATBatt International — 
-      <a href="https://www.nrel.gov/transportation/li-ion-battery-supply-chain-database.html"
-         class="text-blue-600 underline"
-         target="_blank" rel="noopener noreferrer">NREL Li-Ion Battery Supply Chain Database</a>
-      and
-      <a href="https://www.naatbatt.org"
-         class="text-blue-600 underline"
-         target="_blank" rel="noopener noreferrer">NAATBatt International</a>.”
-    </p>
-  
+
     <p class="text-xs text-slate-500 mt-3">
       Generated: <span id="date"></span>
     </p>
   </div>
 
-
 </div>
 
 <script>
-  document.getElementById('date').textContent = new Date().toLocaleDateString();
+document.getElementById('date').textContent = new Date().toLocaleDateString();
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
 
-  // Segment Data
-  const segmentData = {
-    labels: ['Upstream', 'Midstream', 'Downstream', 'Other'],
-    datasets: [
-      {
-        label: 'Facilities',
-        data: [89, 349, 567, 186],
-        backgroundColor: COLORS
-      }
-    ]
-  };
+/* -----------------------------
+   SUPPLY CHAIN SEGMENT DATA
+   ----------------------------- */
+const segmentData = {
+  labels: [
+    'Downstream (370)',
+    'Midstream (270)',
+    'Other - Equipment (143)',
+    'Other - Research (130)',
+    'Upstream (94)',
+    'Other - Service & Repair (90)',
+    'Other (57)',
+    'Other - Modeling/Software (36)',
+    'Under Construction (1)'
+  ],
+  values: [370, 270, 143, 130, 94, 90, 57, 36, 1]
+};
 
-  // Status Data
-  const statusData = {
-    labels: ['Commercial', 'Under construction', 'Planned', 'Pre-commercial/ startup', 'Cancelled', 'Bankrupt'],
-    datasets: [
-      {
-        label: 'Projects',
-        data: [789, 89, 187, 98, 21, 7],
-        backgroundColor: COLORS
-      }
-    ]
-  };
+/* -----------------------------
+   STATUS DATA (your exact values)
+   ----------------------------- */
+const statusData = {
+  labels: [
+    'Commercial (802)',
+    'Planned (170)',
+    'Pre-commercial/startup (129)',
+    'Under construction (59)',
+    'Cancelled (21)',
+    'Bankrupt (4)',
+    'Under Construction (3)',
+    'Paused construction (3)'
+  ],
+  values: [802, 170, 129, 59, 21, 4, 3, 3]
+};
 
-  // State Data
-  const stateData = {
-    labels: ['CA', 'MI', 'TX', 'OH', 'NY', 'MA', 'PA', 'NC', 'Others'],
-    datasets: [
-      {
-        label: 'Facilities',
-        data: [124, 87, 71, 62, 51, 47, 45, 41, 663],
-        backgroundColor: '#10b981'
-      }
-    ]
-  };
+/* -----------------------------
+   TOP STATES BY FACILITY COUNT
+   ----------------------------- */
+const stateLabels = ['CA', 'MI', 'TX', 'MA', 'ON', 'QC', 'OH', 'NY', 'PA', 'NC', 'Others'];
+const stateValues = [
+  165, 98, 59, 53, 51, 47, 43, 42, 40, 37,
+  1191 - (165+98+59+53+51+47+43+42+40+37)  // auto-calc Others
+];
 
-  // Segment Bar Chart
-  new Chart(document.getElementById('segmentBarChart'), {
-    type: 'bar',
-    data: {
-      labels: segmentData.labels,
-      datasets: [{
-        label: 'Facilities',
-        data: segmentData.datasets[0].data,
-        backgroundColor: segmentData.datasets[0].backgroundColor
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false }, tooltip: { enabled: true } }
-    }
-  });
+/* -----------------------------
+   CHARTS
+   ----------------------------- */
+new Chart(document.getElementById('segmentBarChart'), {
+  type: 'bar',
+  data: {
+    labels: segmentData.labels,
+    datasets: [{ data: segmentData.values, backgroundColor: COLORS }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
 
-  // Segment Pie Chart
-  new Chart(document.getElementById('segmentPieChart'), {
-    type: 'pie',
-    data: segmentData,
-    options: { responsive: true }
-  });
+new Chart(document.getElementById('segmentPieChart'), {
+  type: 'pie',
+  data: {
+    labels: segmentData.labels,
+    datasets: [{ data: segmentData.values, backgroundColor: COLORS }]
+  },
+  options: { responsive: true }
+});
 
-  // Status Bar Chart
-  new Chart(document.getElementById('statusBarChart'), {
-    type: 'bar',
-    data: statusData,
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false }, tooltip: { enabled: true } },
-      scales: { x: { ticks: { maxRotation: 45, minRotation: 45 } } }
-    }
-  });
+new Chart(document.getElementById('statusBarChart'), {
+  type: 'bar',
+  data: {
+    labels: statusData.labels,
+    datasets: [{ data: statusData.values, backgroundColor: COLORS }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { ticks: { maxRotation: 45, minRotation: 45 } } }
+  }
+});
 
-  // State Bar Chart (Horizontal)
-  new Chart(document.getElementById('stateBarChart'), {
-    type: 'bar',
-    data: stateData,
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: { legend: { display: false }, tooltip: { enabled: true } }
-    }
-  });
+new Chart(document.getElementById('stateBarChart'), {
+  type: 'bar',
+  data: {
+    labels: stateLabels,
+    datasets: [{ data: stateValues, backgroundColor: '#10b981' }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display: false } }
+  }
+});
 </script>
 
 </body>
 </html>
-
