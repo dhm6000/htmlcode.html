@@ -8,18 +8,30 @@
 <style>
   body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
   #date { margin-bottom: 20px; font-size: 18px; font-weight: bold; }
-  #chartsContainer { display: flex; flex-direction: column; gap: 40px; }
-  .chart-unit { display: flex; flex-direction: column; gap: 10px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
-  .chart-unit div { font-size: 16px; }
+  #chartsContainer { display: flex; flex-direction: column; gap: 30px; }
+
+  .chart-unit { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    background: #fff; 
+    padding: 15px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transform: scale(0.75); /* scale down to 75% */
+    transform-origin: top left;
+  }
+
+  .chart-unit div { font-size: 14px; }
   .flex { display: flex; align-items: center; }
   .flex-1 { flex: 1; }
-  .gap-3 { gap: 0.75rem; }
-  .mb-1 { margin-bottom: 0.25rem; }
+  .gap-3 { gap: 0.5rem; }
+  .mb-1 { margin-bottom: 0.2rem; }
   .font-medium { font-weight: 500; }
   .font-semibold { font-weight: 600; }
-  .text-lg { font-size: 1.125rem; }
-  .w-4 { width: 1rem; }
-  .h-4 { height: 1rem; }
+  .text-lg { font-size: 1rem; }
+  .w-4 { width: 0.8rem; }
+  .h-4 { height: 0.8rem; }
   .rounded-sm { border-radius: 0.125rem; }
 </style>
 </head>
@@ -31,25 +43,25 @@
 
   <!-- Segment Chart + Table -->
   <div class="chart-unit">
-    <canvas id="segmentBarChart" style="height:300px;"></canvas>
+    <canvas id="segmentBarChart"></canvas>
     <div id="segmentTable"></div>
-    <canvas id="segmentPieChart" style="height:300px;"></canvas>
+    <canvas id="segmentPieChart"></canvas>
   </div>
 
   <!-- Planned Projects Chart + Table -->
   <div class="chart-unit">
-    <canvas id="plannedPieChart" style="height:300px;"></canvas>
+    <canvas id="plannedPieChart"></canvas>
     <div id="plannedTable"></div>
   </div>
 
   <!-- Status Chart -->
   <div class="chart-unit">
-    <canvas id="statusBarChart" style="height:300px;"></canvas>
+    <canvas id="statusBarChart"></canvas>
   </div>
 
   <!-- State Chart -->
   <div class="chart-unit">
-    <canvas id="stateBarChart" style="height:300px;"></canvas>
+    <canvas id="stateBarChart"></canvas>
   </div>
 
 </div>
@@ -81,16 +93,7 @@ const statusData = {
 const stateLabels = ['CA','MI','TX','MA','ON','QC','OH','NY','PA','NC','Others'];
 const stateValues = [165,98,59,53,51,47,43,42,40,37, 1191-(165+98+59+53+51+47+43+42+40+37)];
 
-/* Charts */
-
-// Segment Bar
-new Chart(document.getElementById('segmentBarChart'), {
-  type: 'bar',
-  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
-  options: { responsive:true, plugins:{legend:{display:false}, title:{display:true,text:'Companies by Supply Chain Segment',font:{size:20}}}, maintainAspectRatio:false }
-});
-
-// Segment Pie + Table
+/* Populate Tables */
 const totalSegments = segmentData.values.reduce((a,b)=>a+b,0);
 document.getElementById("segmentTable").innerHTML = segmentData.labels.map((label,i)=>{
   const pct=((segmentData.values[i]/totalSegments)*100).toFixed(1);
@@ -100,13 +103,7 @@ document.getElementById("segmentTable").innerHTML = segmentData.labels.map((labe
     <div class="font-semibold text-lg">${pct}%</div>
   </div>`;
 }).join("");
-new Chart(document.getElementById('segmentPieChart'), {
-  type:'pie',
-  data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:20}}}, maintainAspectRatio:false}
-});
 
-// Planned Projects Pie + Table
 const totalPlanned = plannedData.values.reduce((a,b)=>a+b,0);
 document.getElementById("plannedTable").innerHTML = plannedData.labels.map((label,i)=>{
   const pct = ((plannedData.values[i]/totalPlanned)*100).toFixed(1);
@@ -116,25 +113,33 @@ document.getElementById("plannedTable").innerHTML = plannedData.labels.map((labe
     <div class="font-semibold text-lg">${pct}%</div>
   </div>`;
 }).join("");
-new Chart(document.getElementById('plannedPieChart'), {
-  type:'pie',
-  data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]},
-  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:20}}}, maintainAspectRatio:false}
-});
 
-// Status Bar
-new Chart(document.getElementById('statusBarChart'), {
-  type:'bar',
-  data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]},
-  options:{responsive:true, plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:20}}}, scales:{x:{ticks:{maxRotation:45,minRotation:45}}}, maintainAspectRatio:false}
-});
+// Chart rendering functions
+const chartFns = [
+  () => new Chart(document.getElementById('segmentBarChart'), {
+    type:'bar', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
+    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Companies by Supply Chain Segment',font:{size:20}}}}
+  }),
+  () => new Chart(document.getElementById('segmentPieChart'), {
+    type:'pie', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
+    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:20}}}}
+  }),
+  () => new Chart(document.getElementById('plannedPieChart'), {
+    type:'pie', data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]},
+    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:20}}}}
+  }),
+  () => new Chart(document.getElementById('statusBarChart'), {
+    type:'bar', data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]},
+    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:20}}},scales:{x:{ticks:{maxRotation:45,minRotation:45}}}}
+  }),
+  () => new Chart(document.getElementById('stateBarChart'), {
+    type:'bar', data:{labels:stateLabels,datasets:[{data:stateValues,backgroundColor:'#10b981'}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Top States/Provinces by Facility Count',font:{size:20}}}}
+  })
+];
 
-// State Bar Horizontal
-new Chart(document.getElementById('stateBarChart'), {
-  type:'bar',
-  data:{labels:stateLabels,datasets:[{data:stateValues,backgroundColor:'#10b981'}]},
-  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Top States/Provinces by Facility Count',font:{size:20}}},maintainAspectRatio:false}
-});
+// Stagger chart rendering
+chartFns.forEach((fn,i)=>setTimeout(fn, i*200)); // 200ms delay between charts
 </script>
 
 </body>
