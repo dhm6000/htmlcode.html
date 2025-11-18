@@ -18,8 +18,6 @@
     padding: 15px; 
     border-radius: 8px; 
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transform: scale(0.75); /* scale down to 75% */
-    transform-origin: top left;
   }
 
   .chart-unit div { font-size: 14px; }
@@ -33,6 +31,7 @@
   .w-4 { width: 0.8rem; }
   .h-4 { height: 0.8rem; }
   .rounded-sm { border-radius: 0.125rem; }
+  canvas { width: 100% !important; height: 300px !important; }
 </style>
 </head>
 <body>
@@ -41,106 +40,51 @@
 
 <div id="chartsContainer">
 
-  <!-- Segment Chart + Table -->
-  <div class="chart-unit">
-    <canvas id="segmentBarChart"></canvas>
-    <div id="segmentTable"></div>
-    <canvas id="segmentPieChart"></canvas>
-  </div>
-
-  <!-- Planned Projects Chart + Table -->
-  <div class="chart-unit">
-    <canvas id="plannedPieChart"></canvas>
-    <div id="plannedTable"></div>
-  </div>
-
-  <!-- Status Chart -->
-  <div class="chart-unit">
-    <canvas id="statusBarChart"></canvas>
-  </div>
-
-  <!-- State Chart -->
-  <div class="chart-unit">
-    <canvas id="stateBarChart"></canvas>
-  </div>
+  <div class="chart-unit" data-chart="segmentBarChart"></div>
+  <div class="chart-unit" data-chart="segmentPieChart"></div>
+  <div class="chart-unit" data-chart="plannedPieChart"></div>
+  <div class="chart-unit" data-chart="statusBarChart"></div>
+  <div class="chart-unit" data-chart="stateBarChart"></div>
 
 </div>
 
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString();
-
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
 
-/* Segment Data */
-const segmentData = {
-  labels: ['Downstream','Midstream','Other - Equipment','Other - Research','Upstream','Other - Service & Repair','Other','Other - Modeling/Software','Under Construction'],
-  values: [370,270,143,130,94,90,57,36,1]
-};
-
-/* Planned Projects Data */
-const plannedData = {
-  labels: ['Downstream','Midstream','Other','Other - Equipment','Other - Research','Other - Service & Repair','Upstream'],
-  values: [45,76,4,1,4,2,38]
-};
-
-/* Status Data */
-const statusData = {
-  labels: ['Commercial','Planned','Pre-commercial/startup','Under construction','Cancelled','Bankrupt','Under Construction','Paused construction'],
-  values: [802,170,129,59,21,4,3,3]
-};
-
-/* States Data */
+/* Data */
+const segmentData = {labels:['Downstream','Midstream','Other - Equipment','Other - Research','Upstream','Other - Service & Repair','Other','Other - Modeling/Software','Under Construction'], values:[370,270,143,130,94,90,57,36,1]};
+const plannedData = {labels:['Downstream','Midstream','Other','Other - Equipment','Other - Research','Other - Service & Repair','Upstream'], values:[45,76,4,1,4,2,38]};
+const statusData = {labels:['Commercial','Planned','Pre-commercial/startup','Under construction','Cancelled','Bankrupt','Under Construction','Paused construction'], values:[802,170,129,59,21,4,3,3]};
 const stateLabels = ['CA','MI','TX','MA','ON','QC','OH','NY','PA','NC','Others'];
 const stateValues = [165,98,59,53,51,47,43,42,40,37, 1191-(165+98+59+53+51+47+43+42+40+37)];
 
-/* Populate Tables */
-const totalSegments = segmentData.values.reduce((a,b)=>a+b,0);
-document.getElementById("segmentTable").innerHTML = segmentData.labels.map((label,i)=>{
-  const pct=((segmentData.values[i]/totalSegments)*100).toFixed(1);
-  return `<div class="flex gap-3 mb-1">
-    <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-    <div class="flex-1 font-medium text-lg">${label}</div>
-    <div class="font-semibold text-lg">${pct}%</div>
-  </div>`;
-}).join("");
+/* Chart config functions */
+function createChart(id) {
+  const ctx = document.createElement('canvas');
+  ctx.id = id;
+  document.querySelector(`[data-chart="${id}"]`).appendChild(ctx);
 
-const totalPlanned = plannedData.values.reduce((a,b)=>a+b,0);
-document.getElementById("plannedTable").innerHTML = plannedData.labels.map((label,i)=>{
-  const pct = ((plannedData.values[i]/totalPlanned)*100).toFixed(1);
-  return `<div class="flex gap-3 mb-1">
-    <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-    <div class="flex-1 font-medium text-lg">${label}</div>
-    <div class="font-semibold text-lg">${pct}%</div>
-  </div>`;
-}).join("");
+  switch(id){
+    case 'segmentBarChart': return new Chart(ctx, {type:'bar', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]}, options:{plugins:{legend:{display:false},title:{display:true,text:'Companies by Supply Chain Segment',font:{size:18}}},responsive:true,maintainAspectRatio:false}});
+    case 'segmentPieChart': return new Chart(ctx, {type:'pie', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]}, options:{plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:18}}},responsive:true,maintainAspectRatio:false}});
+    case 'plannedPieChart': return new Chart(ctx, {type:'pie', data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]}, options:{plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:18}}},responsive:true,maintainAspectRatio:false}});
+    case 'statusBarChart': return new Chart(ctx, {type:'bar', data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]}, options:{plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:18}}},responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{maxRotation:45,minRotation:45}}}}});
+    case 'stateBarChart': return new Chart(ctx, {type:'bar', data:{labels:stateLabels,datasets:[{data:stateValues,backgroundColor:'#10b981'}]}, options:{indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:'Top States/Provinces by Facility Count',font:{size:18}}},responsive:true,maintainAspectRatio:false}});
+  }
+}
 
-// Chart rendering functions
-const chartFns = [
-  () => new Chart(document.getElementById('segmentBarChart'), {
-    type:'bar', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Companies by Supply Chain Segment',font:{size:20}}}}
-  }),
-  () => new Chart(document.getElementById('segmentPieChart'), {
-    type:'pie', data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Supply Chain Segment Distribution',font:{size:20}}}}
-  }),
-  () => new Chart(document.getElementById('plannedPieChart'), {
-    type:'pie', data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]},
-    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Planned Projects by Supply Chain Segment',font:{size:20}}}}
-  }),
-  () => new Chart(document.getElementById('statusBarChart'), {
-    type:'bar', data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]},
-    options:{responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Project Status Distribution',font:{size:20}}},scales:{x:{ticks:{maxRotation:45,minRotation:45}}}}
-  }),
-  () => new Chart(document.getElementById('stateBarChart'), {
-    type:'bar', data:{labels:stateLabels,datasets:[{data:stateValues,backgroundColor:'#10b981'}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,devicePixelRatio:1,plugins:{legend:{display:false},title:{display:true,text:'Top States/Provinces by Facility Count',font:{size:20}}}}
-  })
-];
+/* Lazy load charts on scroll */
+const observer = new IntersectionObserver((entries, obs)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      createChart(e.target.dataset.chart);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.3});
 
-// Stagger chart rendering
-chartFns.forEach((fn,i)=>setTimeout(fn, i*200)); // 200ms delay between charts
+document.querySelectorAll('.chart-unit').forEach(el=>observer.observe(el));
 </script>
-
 </body>
 </html>
