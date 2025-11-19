@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Li-Ion Battery Supply Chain Dashboard</title>
 
 <!-- Tailwind CSS -->
@@ -12,6 +12,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+  :root { --chart-scale: 0.75; } /* scale down charts to 75% */
+  .chart-wrap { transform-origin: left top; transform: scale(var(--chart-scale)); }
   @media print {
     body { margin: 0; }
     .no-print { display: none !important; }
@@ -23,91 +25,100 @@
 
 <body class="bg-slate-50 p-6">
 
-<div class="max-w-5xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6">
 
   <!-- Print Button + Title -->
   <div class="print-page">
-    <div class="no-print mb-4">
+    <div class="no-print mb-4 flex items-center gap-4">
       <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors">
         📄 Save as PDF / Print
       </button>
-      <p class="text-sm text-slate-600 mt-2">Click to open print dialog, then select "Save as PDF"</p>
+      <div class="text-sm text-slate-600">Click to open print dialog, then select "Save as PDF"</div>
     </div>
-    <h1 class="text-4xl font-bold text-slate-800 mb-2">Li-Ion Battery Supply Chain Dashboard</h1>
-    <p class="text-slate-600">Comprehensive visualization of the North American battery supply chain ecosystem</p>
+    <h1 class="text-3xl font-bold text-slate-800 mb-1">Li-Ion Battery Supply Chain Dashboard</h1>
+    <p class="text-sm text-slate-600">Comprehensive visualization of the North American battery supply chain ecosystem</p>
   </div>
 
   <!-- Key Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 print-page">
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800" id="totalFacilities">1191</div>
-      <div class="text-slate-600 text-sm">Total Facilities</div>
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 print-page">
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+      <div class="text-2xl font-bold text-slate-800" id="totalFacilities">1191</div>
+      <div class="text-slate-600 text-xs">Total Facilities</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800" id="commercialOps">802</div>
-      <div class="text-slate-600 text-sm">Commercial Operations</div>
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+      <div class="text-2xl font-bold text-slate-800" id="commercialOps">802</div>
+      <div class="text-slate-600 text-xs">Commercial Operations</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800" id="plannedProjects">170</div>
-      <div class="text-slate-600 text-sm">Planned Projects</div>
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+      <div class="text-2xl font-bold text-slate-800" id="plannedProjects">170</div>
+      <div class="text-slate-600 text-xs">Planned Projects</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-400">
-      <div class="text-3xl font-bold text-slate-800">50+</div>
-      <div class="text-slate-600 text-sm">States/Provinces</div>
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+      <div class="text-2xl font-bold text-slate-800">50+</div>
+      <div class="text-slate-600 text-xs">States/Provinces</div>
     </div>
   </div>
 
   <!-- Segment Bar -->
-  <div class="bg-white rounded-lg shadow-md p-6 print-page">
-    <h2 class="text-xl font-semibold text-slate-800 mb-4">Companies by Supply Chain Segment</h2>
-    <canvas id="segmentBarChart" height="300"></canvas>
+  <div class="bg-white rounded-lg shadow-md p-4 print-page">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3">Companies by Supply Chain Segment</h2>
+    <div class="chart-wrap">
+      <canvas id="segmentBarChart" height="220" aria-label="Companies by supply chain segment"></canvas>
+    </div>
   </div>
 
-  <!-- Segment Pie + Percentages -->
-  <div class="bg-white rounded-lg shadow-md p-6 print-page">
-    <h2 class="text-xl font-semibold text-slate-800 mb-4">Supply Chain Segment Distribution</h2>
-    <canvas id="segmentPieChart" height="300" class="mb-4"></canvas>
-    <div id="segmentTable" class="text-sm bg-slate-50 p-4 rounded-lg"></div>
+  <!-- Segment Pie + Percent Table (two-column) -->
+  <div class="bg-white rounded-lg shadow-md p-4 print-page">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3">Supply Chain Segment Distribution</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      <div class="chart-wrap">
+        <canvas id="segmentPieChart" height="200" aria-label="Supply chain segment pie chart"></canvas>
+      </div>
+      <div id="segmentTable" class="text-sm bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
+    </div>
   </div>
 
-  <!-- Planned Projects Pie + Percentages -->
-  <div class="bg-white rounded-lg shadow-md p-6 print-page">
-    <h2 class="text-xl font-semibold text-slate-800 mb-4">Planned Projects by Supply Chain Segment</h2>
-    <canvas id="plannedPieChart" height="300" class="mb-4"></canvas>
-    <div id="plannedTable" class="text-sm bg-slate-50 p-4 rounded-lg"></div>
+  <!-- Planned Projects Pie + Percent Table (two-column) -->
+  <div class="bg-white rounded-lg shadow-md p-4 print-page">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3">Planned Projects by Supply Chain Segment</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      <div class="chart-wrap">
+        <canvas id="plannedPieChart" height="200" aria-label="Planned projects pie chart"></canvas>
+      </div>
+      <div id="plannedTable" class="text-sm bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
+    </div>
   </div>
 
   <!-- Status Bar -->
-  <div class="bg-white rounded-lg shadow-md p-6 print-page">
-    <h2 class="text-xl font-semibold text-slate-800 mb-4">Project Status Distribution</h2>
-    <canvas id="statusBarChart" height="300"></canvas>
+  <div class="bg-white rounded-lg shadow-md p-4 print-page">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3">Project Status Distribution</h2>
+    <div class="chart-wrap">
+      <canvas id="statusBarChart" height="220" aria-label="Project status distribution"></canvas>
+    </div>
   </div>
 
   <!-- State Bar Horizontal -->
-  <div class="bg-white rounded-lg shadow-md p-6 print-page">
-    <h2 class="text-xl font-semibold text-slate-800 mb-4">Top States/Provinces by Facility Count</h2>
-    <canvas id="stateBarChart" height="350"></canvas>
-    <div class="mt-4 text-sm text-slate-600 bg-slate-50 p-3 rounded">
+  <div class="bg-white rounded-lg shadow-md p-4 print-page">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3">Top States/Provinces by Facility Count</h2>
+    <div class="chart-wrap">
+      <canvas id="stateBarChart" height="300" aria-label="Top states by facility count"></canvas>
+    </div>
+    <div class="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded">
       <strong>Note:</strong> "Others" represents all additional states/provinces beyond the top 10.
     </div>
   </div>
 
   <!-- Footer -->
-  <div class="bg-blue-50 rounded-lg p-6 border border-blue-200 print-page">
+  <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 print-page">
     <h3 class="font-semibold text-slate-800 mb-2">About this Data</h3>
-    <p class="text-sm text-slate-600 mb-3">
+    <p class="text-sm text-slate-600 mb-2">
       This dashboard visualizes data from the NAATBatt Lithium-Ion Battery Supply Chain Database.
       The full online database is available
       <a href="https://www.nrel.gov/transportation/li-ion-battery-supply-chain-database-online"
-         class="text-blue-600 underline"
-         target="_blank" rel="noopener noreferrer">here</a>.
+         class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">NREL / NAATBatt Database</a>.
     </p>
-    <p class="text-sm text-slate-600 mb-3">
-      Use of this data requires Attribution to NREL and NAATBatt International.
-    </p>
-    <p class="text-xs text-slate-500 mt-3">
-      Generated: <span id="date"></span>
-    </p>
+    <p class="text-sm text-slate-600 mb-1">Use of this data requires Attribution to NREL and NAATBatt International.</p>
+    <p class="text-xs text-slate-500 mt-2">Generated: <span id="date"></span></p>
   </div>
 
 </div>
@@ -115,65 +126,92 @@
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString();
 
+/* Colors */
 const COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
 
 /* Data */
-const segmentData = {labels:['Downstream','Midstream','Other - Equipment','Other - Research','Upstream','Other - Service & Repair','Other','Other - Modeling/Software','Under Construction'], values:[370,270,143,130,94,90,57,36,1]};
-const plannedData = {labels:['Downstream','Midstream','Other','Other - Equipment','Other - Research','Other - Service & Repair','Upstream'], values:[45,76,4,1,4,2,38]};
-const statusData = {labels:['Commercial','Planned','Pre-commercial/startup','Under construction','Cancelled','Bankrupt','Under Construction','Paused construction'], values:[802,170,129,59,21,4,3,3]};
+const segmentData = {
+  labels: ['Downstream','Midstream','Other - Equipment','Other - Research','Upstream','Other - Service & Repair','Other','Other - Modeling/Software','Under Construction'],
+  values: [370,270,143,130,94,90,57,36,1]
+};
+const plannedData = {
+  labels: ['Downstream','Midstream','Other','Other - Equipment','Other - Research','Other - Service & Repair','Upstream'],
+  values: [45,76,4,1,4,2,38]
+};
+const statusData = {
+  labels: ['Commercial','Planned','Pre-commercial/startup','Under construction','Cancelled','Bankrupt','Under Construction','Paused construction'],
+  values: [802,170,129,59,21,4,3,3]
+};
 const stateLabels = ['CA','MI','TX','MA','ON','QC','OH','NY','PA','NC','Others'];
 const stateValues = [165,98,59,53,51,47,43,42,40,37, 1191-(165+98+59+53+51+47+43+42+40+37)];
 
-/* Helper to generate percentages under pie charts */
-function generatePercentTable(containerId, labels, values) {
-  const total = values.reduce((a,b)=>a+b,0);
-  document.getElementById(containerId).innerHTML = labels.map((label,i)=>{
-    const pct = ((values[i]/total)*100).toFixed(1);
-    return `<div class="flex items-center gap-3 mb-1">
-      <div class="w-4 h-4 rounded-sm" style="background:${COLORS[i]}"></div>
-      <div class="flex-1 font-medium">${label}</div>
-      <div class="font-semibold">${pct}%</div>
-    </div>`;
+/* Helper: generate color-coded percent table to a container */
+function generatePercentTable(containerId, labels, values, startIndex = 0) {
+  const total = values.reduce((a,b)=>a+b,0) || 1;
+  const rows = labels.map((label, i) => {
+    const val = values[i] || 0;
+    const pct = ((val/total)*100).toFixed(1);
+    const color = COLORS[(i + startIndex) % COLORS.length];
+    return `
+      <div class="flex items-center justify-between gap-4 mb-2">
+        <div class="flex items-center gap-3">
+          <div class="w-4 h-4 rounded-sm" style="background:${color}"></div>
+          <div class="text-sm font-medium">${label}</div>
+        </div>
+        <div class="text-sm font-semibold">${pct}%</div>
+      </div>
+    `;
   }).join("");
+  document.getElementById(containerId).innerHTML = `
+    <div class="mb-2 text-slate-700 font-semibold">Distribution (color-coded)</div>
+    <div>${rows}</div>
+    <div class="mt-3 text-xs text-slate-500">Total: ${total.toLocaleString()}</div>
+  `;
 }
 
-/* Charts */
+/* Charts - options optimized for smaller scale */
+const baseOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  layout: { padding: 8 }
+};
 
-// Segment Bar
+/* Segment Bar */
 new Chart(document.getElementById('segmentBarChart'), {
-  type:'bar',
-  data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-  options:{responsive:true,plugins:{legend:{display:false}}}
+  type: 'bar',
+  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
+  options: Object.assign({}, baseOptions, { scales: { x: { ticks: { maxRotation: 20, minRotation: 20 } } } })
 });
 
-// Segment Pie + Percent Table
-generatePercentTable('segmentTable', segmentData.labels, segmentData.values);
+/* Segment Pie */
+generatePercentTable('segmentTable', segmentData.labels, segmentData.values, 0);
 new Chart(document.getElementById('segmentPieChart'), {
-  type:'pie',
-  data:{labels:segmentData.labels,datasets:[{data:segmentData.values,backgroundColor:COLORS}]},
-  options:{responsive:true,plugins:{legend:{display:false}}}
+  type: 'pie',
+  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: segmentData.labels.map((_,i)=>COLORS[i % COLORS.length]) }] },
+  options: baseOptions
 });
 
-// Planned Pie + Percent Table
-generatePercentTable('plannedTable', plannedData.labels, plannedData.values);
+/* Planned Pie */
+generatePercentTable('plannedTable', plannedData.labels, plannedData.values, 0);
 new Chart(document.getElementById('plannedPieChart'), {
-  type:'pie',
-  data:{labels:plannedData.labels,datasets:[{data:plannedData.values,backgroundColor:COLORS}]},
-  options:{responsive:true,plugins:{legend:{display:false}}}
+  type: 'pie',
+  data: { labels: plannedData.labels, datasets: [{ data: plannedData.values, backgroundColor: plannedData.labels.map((_,i)=>COLORS[i % COLORS.length]) }] },
+  options: baseOptions
 });
 
-// Status Bar
+/* Status Bar */
 new Chart(document.getElementById('statusBarChart'), {
-  type:'bar',
-  data:{labels:statusData.labels,datasets:[{data:statusData.values,backgroundColor:COLORS}]},
-  options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:45,minRotation:45}}}}
+  type: 'bar',
+  data: { labels: statusData.labels, datasets: [{ data: statusData.values, backgroundColor: COLORS.concat(COLORS).slice(0, statusData.labels.length) }] },
+  options: Object.assign({}, baseOptions, { scales: { x: { ticks: { maxRotation: 30, minRotation: 20 } } } })
 });
 
-// State Bar Horizontal
+/* State Bar Horizontal */
 new Chart(document.getElementById('stateBarChart'), {
-  type:'bar',
-  data:{labels:stateLabels,datasets:[{data:stateValues,backgroundColor:'#10b981'}]},
-  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}
+  type: 'bar',
+  data: { labels: stateLabels, datasets: [{ data: stateValues, backgroundColor: '#10b981' }] },
+  options: Object.assign({}, baseOptions, { indexAxis: 'y' })
 });
 </script>
 
