@@ -58,19 +58,19 @@
 
   <!-- Key Stats -->
   <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 print-page">
-    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
       <div class="text-2xl font-bold text-slate-800" id="totalFacilities">1191</div>
       <div class="text-slate-600 text-xs">Total Facilities</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
       <div class="text-2xl font-bold text-slate-800" id="commercialOps">802</div>
       <div class="text-slate-600 text-xs">Commercial Operations</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-500">
       <div class="text-2xl font-bold text-slate-800" id="plannedProjects">170</div>
       <div class="text-slate-600 text-xs">Planned Projects</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+    <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500">
       <div class="text-2xl font-bold text-slate-800">50+</div>
       <div class="text-slate-600 text-xs">States/Provinces</div>
     </div>
@@ -84,7 +84,7 @@
     </div>
   </div>
 
-  <!-- Segment Pie + Percent Table (two-column) -->
+  <!-- Segment Pie + Table -->
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Supply Chain Segment Distribution</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -95,7 +95,7 @@
     </div>
   </div>
 
-  <!-- Planned Projects Pie + Percent Table (two-column) -->
+  <!-- Planned Projects Pie + Table -->
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Planned Projects by Supply Chain Segment</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -252,15 +252,7 @@ new Chart(document.getElementById('segmentPieChart'), {
     ...baseOptions,
     plugins: {
       legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          boxWidth: 12,
-          font: {
-            size: 10
-          },
-          padding: 15
-        }
+        display: false
       }
     }
   }
@@ -283,15 +275,7 @@ new Chart(document.getElementById('plannedPieChart'), {
     ...baseOptions,
     plugins: {
       legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          boxWidth: 12,
-          font: {
-            size: 10
-          },
-          padding: 15
-        }
+        display: false
       }
     }
   }
