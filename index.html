@@ -12,13 +12,30 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-  :root { --chart-scale: 0.75; } /* scale down charts to 75% */
-  .chart-wrap { transform-origin: left top; transform: scale(var(--chart-scale)); }
+  /* Improved chart sizing */
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin: 0 auto;
+  }
+  .chart-container-sm {
+    height: 200px;
+  }
+  .chart-container-lg {
+    height: 350px;
+  }
+  
   @media print {
     body { margin: 0; }
     .no-print { display: none !important; }
     .print-page { page-break-inside: avoid; break-inside: avoid; }
     @page { size: landscape; margin: 0.5in; }
+    
+    /* Ensure charts print properly */
+    .chart-container, .chart-container-sm, .chart-container-lg {
+      height: 250px !important;
+      page-break-inside: avoid;
+    }
   }
 </style>
 </head>
@@ -62,8 +79,8 @@
   <!-- Segment Bar -->
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Companies by Supply Chain Segment</h2>
-    <div class="chart-wrap">
-      <canvas id="segmentBarChart" height="150" aria-label="Companies by supply chain segment"></canvas>
+    <div class="chart-container">
+      <canvas id="segmentBarChart" aria-label="Companies by supply chain segment"></canvas>
     </div>
   </div>
 
@@ -71,8 +88,8 @@
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Supply Chain Segment Distribution</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-      <div class="chart-wrap">
-        <canvas id="segmentPieChart" height="250" aria-label="Supply chain segment pie chart"></canvas>
+      <div class="chart-container-lg">
+        <canvas id="segmentPieChart" aria-label="Supply chain segment pie chart"></canvas>
       </div>
       <div id="segmentTable" class="text-sm bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
     </div>
@@ -82,8 +99,8 @@
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Planned Projects by Supply Chain Segment</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-      <div class="chart-wrap">
-        <canvas id="plannedPieChart" height="250" aria-label="Planned projects pie chart"></canvas>
+      <div class="chart-container-lg">
+        <canvas id="plannedPieChart" aria-label="Planned projects pie chart"></canvas>
       </div>
       <div id="plannedTable" class="text-sm bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
     </div>
@@ -92,16 +109,16 @@
   <!-- Status Bar -->
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Project Status Distribution</h2>
-    <div class="chart-wrap">
-      <canvas id="statusBarChart" height="150" aria-label="Project status distribution"></canvas>
+    <div class="chart-container">
+      <canvas id="statusBarChart" aria-label="Project status distribution"></canvas>
     </div>
   </div>
 
   <!-- State Bar Horizontal -->
   <div class="bg-white rounded-lg shadow-md p-4 print-page">
     <h2 class="text-lg font-semibold text-slate-800 mb-3">Top States/Provinces by Facility Count</h2>
-    <div class="chart-wrap">
-      <canvas id="stateBarChart" height="100" aria-label="Top states by facility count"></canvas>
+    <div class="chart-container-sm">
+      <canvas id="stateBarChart" aria-label="Top states by facility count"></canvas>
     </div>
     <div class="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded">
       <strong>Note:</strong> "Others" represents all additional states/provinces beyond the top 10.
@@ -169,53 +186,176 @@ function generatePercentTable(containerId, labels, values, startIndex = 0) {
   `;
 }
 
-/* Charts - options optimized for smaller scale */
+/* Charts - options optimized for proper sizing */
 const baseOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { display: false } },
-  layout: { padding: 8 }
+  plugins: { 
+    legend: { 
+      display: false 
+    } 
+  },
+  layout: { 
+    padding: {
+      top: 10,
+      bottom: 10,
+      left: 15,
+      right: 15
+    }
+  }
 };
 
 /* Segment Bar */
 new Chart(document.getElementById('segmentBarChart'), {
   type: 'bar',
-  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: COLORS }] },
-  options: Object.assign({}, baseOptions, { scales: { x: { ticks: { maxRotation: 20, minRotation: 20 } } } })
+  data: { 
+    labels: segmentData.labels, 
+    datasets: [{ 
+      data: segmentData.values, 
+      backgroundColor: COLORS,
+      borderWidth: 0
+    }] 
+  },
+  options: {
+    ...baseOptions,
+    scales: { 
+      x: { 
+        ticks: { 
+          maxRotation: 45,
+          minRotation: 45,
+          font: {
+            size: 10
+          }
+        } 
+      },
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
 });
 
 /* Segment Pie */
 generatePercentTable('segmentTable', segmentData.labels, segmentData.values, 0);
 new Chart(document.getElementById('segmentPieChart'), {
   type: 'pie',
-  data: { labels: segmentData.labels, datasets: [{ data: segmentData.values, backgroundColor: segmentData.labels.map((_,i)=>COLORS[i % COLORS.length]) }] },
-  options: baseOptions
+  data: { 
+    labels: segmentData.labels, 
+    datasets: [{ 
+      data: segmentData.values, 
+      backgroundColor: segmentData.labels.map((_,i)=>COLORS[i % COLORS.length]),
+      borderWidth: 1,
+      borderColor: '#fff'
+    }] 
+  },
+  options: {
+    ...baseOptions,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 12,
+          font: {
+            size: 10
+          },
+          padding: 15
+        }
+      }
+    }
+  }
 });
 
 /* Planned Pie */
 generatePercentTable('plannedTable', plannedData.labels, plannedData.values, 0);
 new Chart(document.getElementById('plannedPieChart'), {
   type: 'pie',
-  data: { labels: plannedData.labels, datasets: [{ data: plannedData.values, backgroundColor: plannedData.labels.map((_,i)=>COLORS[i % COLORS.length]) }] },
-  options: baseOptions
+  data: { 
+    labels: plannedData.labels, 
+    datasets: [{ 
+      data: plannedData.values, 
+      backgroundColor: plannedData.labels.map((_,i)=>COLORS[i % COLORS.length]),
+      borderWidth: 1,
+      borderColor: '#fff'
+    }] 
+  },
+  options: {
+    ...baseOptions,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 12,
+          font: {
+            size: 10
+          },
+          padding: 15
+        }
+      }
+    }
+  }
 });
 
 /* Status Bar */
 new Chart(document.getElementById('statusBarChart'), {
   type: 'bar',
-  data: { labels: statusData.labels, datasets: [{ data: statusData.values, backgroundColor: COLORS.concat(COLORS).slice(0, statusData.labels.length) }] },
-  options: Object.assign({}, baseOptions, { scales: { x: { ticks: { maxRotation: 30, minRotation: 20 } } } })
+  data: { 
+    labels: statusData.labels, 
+    datasets: [{ 
+      data: statusData.values, 
+      backgroundColor: COLORS.concat(COLORS).slice(0, statusData.labels.length),
+      borderWidth: 0
+    }] 
+  },
+  options: {
+    ...baseOptions,
+    scales: { 
+      x: { 
+        ticks: { 
+          maxRotation: 45,
+          minRotation: 45,
+          font: {
+            size: 10
+          }
+        } 
+      },
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
 });
 
 /* State Bar Horizontal */
 new Chart(document.getElementById('stateBarChart'), {
   type: 'bar',
-  data: { labels: stateLabels, datasets: [{ data: stateValues, backgroundColor: '#10b981' }] },
-  options: Object.assign({}, baseOptions, { indexAxis: 'y' })
+  data: { 
+    labels: stateLabels, 
+    datasets: [{ 
+      data: stateValues, 
+      backgroundColor: '#10b981',
+      borderWidth: 0
+    }] 
+  },
+  options: {
+    ...baseOptions,
+    indexAxis: 'y',
+    scales: {
+      y: {
+        ticks: {
+          font: {
+            size: 11
+          }
+        }
+      },
+      x: {
+        beginAtZero: true
+      }
+    }
+  }
 });
 </script>
 
 </body>
 </html>
-
-
